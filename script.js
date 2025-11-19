@@ -23,6 +23,7 @@
       q: "What does HTML stand for?",
       choices: [
         "HyperText Markup Language",
+
         "Hyperlinks Text Mark Language",
         "Home Tool Markup Language",
         "Hyperlinking Textual Markup Language",
@@ -53,6 +54,8 @@
   const choicesList = el("choices");
   const scoreEl = el("score");
   const seedInput = el("seed");
+  const questionNum = el("qnum");
+  const currentScore = el("score-mini");
 
   let order = [];
   let current = 0;
@@ -61,13 +64,15 @@
 
   function randSeed(s) {
     // simple LCG for reproducible order
-    let m = 0x80000000,
+    let m = 0x80000000, //　2 to the power of 31 in hexadecimal
       a = 1103515245,
       c = 12345;
-    let state = typeof s === "number" ? s : Math.abs(hashStr(String(s)));
+    let state = typeof s === "number" ? s : hashStr(String(s));
+
+    //Once this function called as a variable definition, subsequent calls to that variable will only invoke the anonymous function portion thereafter.
     return function () {
       state = (a * state + c) % m;
-      return state / m;
+      return state / m; // return in range [0,1)
     };
   }
 
@@ -75,13 +80,13 @@
     // djb2
     let h = 5381;
     for (let i = 0; i < str.length; i++) h = (h << 5) + h + str.charCodeAt(i);
-    return h >>> 0;
+    return h >>> 0; // ensure non-negative integer (~ mod 4294967296(=2^32))
   }
 
   function shuffle(arr, rnd = Math.random) {
     const a = arr.slice();
     for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(rnd() * (i + 1));
+      const j = Math.floor(rnd() * (i + 1)); // random index from [0,i]
       [a[i], a[j]] = [a[j], a[i]];
     }
     return a;
@@ -89,9 +94,13 @@
 
   function start() {
     const seedVal = seedInput.value.trim();
-    const rnd = seedVal
-      ? randSeed(Number(seedVal) || hashStr(seedVal))
-      : Math.random;
+    let rnd;
+    if (seedVal === "") {
+      rnd = Math.random;
+    } else {
+      const num = Number(seedVal);
+      rnd = randSeed(isNaN(num) ? hashStr(seedVal) : num);
+    }
     order = shuffle(
       QUESTIONS.map((_, i) => i),
       rnd
@@ -105,6 +114,9 @@
   }
 
   function renderQuestion() {
+    questionNum.textContent = current + 1;
+    currentScore.textContent = score;
+
     selected = null;
     const idx = order[current];
     const item = QUESTIONS[idx];
