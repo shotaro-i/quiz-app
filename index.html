@@ -8,79 +8,62 @@
   </head>
   <body>
     <main class="app" id="app">
-      <!DOCTYPE html>
-      <html lang="en">
-        <head>
-          <meta charset="utf-8" />
-          <meta name="viewport" content="width=device-width,initial-scale=1" />
-          <title>Quiz App</title>
-          <link rel="stylesheet" href="styles.css" />
-        </head>
-        <body>
-          <main class="app" id="app">
-            <header class="app-header">
-              <h1>Quiz App</h1>
-              <p class="muted">
-                A tiny accessible quiz built with vanilla JavaScript.
-              </p>
-            </header>
+      <header class="app-header">
+        <h1>Quiz App</h1>
+        <p class="muted">
+          A tiny accessible quiz built with vanilla JavaScript.
+        </p>
+      </header>
 
-            <section id="start-screen">
-              <div class="card">
-                <p class="muted">
-                  Try the short sample quiz. Provide an optional seed for
-                  reproducible order:
-                </p>
-                <div class="controls">
-                  <input
-                    id="seed"
-                    placeholder="seed (optional)"
-                    aria-label="seed value"
-                  />
-                  <button class="btn" id="btn-start">Start Quiz</button>
-                </div>
-              </div>
-            </section>
+      <section id="start-screen">
+        <div class="card">
+          <p class="muted">
+            Try the short sample quiz. Provide an optional seed for reproducible
+            order:
+          </p>
+          <div class="controls">
+            <input
+              id="seed"
+              placeholder="seed (optional)"
+              aria-label="seed value"
+            />
+            <button class="btn" id="btn-start">Start Quiz</button>
+          </div>
+        </div>
+      </section>
 
-            <section id="quiz-screen" class="hidden" aria-live="polite">
-              <div class="card">
-                <div class="quiz-header">
-                  <div class="progress" aria-hidden="true">
-                    <div id="progress-bar" class="progress-bar"></div>
-                  </div>
-                  <div class="meta">
-                    <div class="muted">Question <span id="qnum">1</span></div>
-                    <div class="muted">
-                      Score <span id="score-mini">0</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="question">
-                  <div id="question-text">Question text</div>
-                </div>
-                <ul id="choices" class="choices" role="list"></ul>
-              </div>
-            </section>
+      <section id="quiz-screen" class="hidden" aria-live="polite">
+        <div class="card">
+          <div class="quiz-header">
+            <div class="progress" aria-hidden="true">
+              <div id="progress-bar" class="progress-bar"></div>
+            </div>
+            <div class="meta">
+              <div class="muted">Question <span id="qnum">1</span></div>
+              <div class="muted">Score <span id="score-mini">0</span></div>
+            </div>
+          </div>
+          <div class="question">
+            <div id="question-text">Question text</div>
+          </div>
+          <ul id="choices" class="choices" role="list"></ul>
+        </div>
+      </section>
 
-            <section id="result-screen" class="hidden">
-              <div class="card">
-                <h2>Results</h2>
-                <p>Your score: <strong id="score">0/0</strong></p>
-                <div class="quiz-actions">
-                  <button class="btn" id="btn-restart">Back to Start</button>
-                </div>
-              </div>
-            </section>
+      <section id="result-screen" class="hidden">
+        <div class="card">
+          <h2>Results</h2>
+          <p>Your score: <strong id="score">0/0</strong></p>
+          <div class="quiz-actions">
+            <button class="btn" id="btn-restart">Back to Start</button>
+          </div>
+        </div>
+      </section>
 
-            <footer class="app-footer">
-              <p class="muted">
-                Built with plain JS — accessible and responsive.
-              </p>
-            </footer>
-          </main>
-          <script src="script.js"></script>
-        </body>
-      </html>
+      <footer class="app-footer">
+        <p class="muted">Built with plain JS — accessible and responsive.</p>
+      </footer>
     </main>
+    <script src="script.js"></script>
   </body>
 </html>
