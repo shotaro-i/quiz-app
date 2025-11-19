@@ -136,6 +136,18 @@
         if (ev.key === "Enter" || ev.key === " ") {
           ev.preventDefault();
           onSelect.call(li, ev);
+          return;
+        }
+        // Move focus with arrow keys (do not select)
+        if (ev.key === "ArrowDown" || ev.key === "ArrowRight") {
+          ev.preventDefault();
+          const next = li.nextElementSibling || choicesList.firstElementChild;
+          if (next) next.focus();
+        } else if (ev.key === "ArrowUp" || ev.key === "ArrowLeft") {
+          ev.preventDefault();
+          const prev =
+            li.previousElementSibling || choicesList.lastElementChild;
+          if (prev) prev.focus();
         }
       });
       choicesList.appendChild(li);
