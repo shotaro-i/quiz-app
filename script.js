@@ -54,7 +54,7 @@
   const choicesList = el("choices");
   const scoreEl = el("score");
   const seedInput = el("seed");
-  const questionNum = el("qnum");
+  const questionNum = el("question-num");
   const currentScore = el("score-mini");
 
   let order = [];
@@ -110,6 +110,12 @@
     startScreen.classList.add("hidden");
     resultScreen.classList.add("hidden");
     quizScreen.classList.remove("hidden");
+    // subtle card entrance animation
+    const quizCard = quizScreen.querySelector(".card");
+    if (quizCard) {
+      quizCard.classList.add("animate");
+      setTimeout(() => quizCard.classList.remove("animate"), 520);
+    }
     renderQuestion();
   }
 
@@ -151,7 +157,14 @@
         }
       });
       choicesList.appendChild(li);
+      // staggered entrance
+      setTimeout(() => li.classList.add("entered"), 40 * i + 20);
     });
+    // focus first choice for keyboard users
+    setTimeout(() => {
+      const first = choicesList.firstElementChild;
+      if (first) first.focus();
+    }, 40);
     updateProgress();
   }
 
@@ -164,8 +177,9 @@
     // mark
     const nodes = Array.from(choicesList.children);
     nodes.forEach((n) =>
-      n.classList.remove("selected", "correct", "incorrect")
+      n.classList.remove("correct", "incorrect")
     );
+
     if (selected === item.answer) {
       li.classList.add("correct");
       score++;
