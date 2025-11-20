@@ -9,10 +9,22 @@
   <body>
     <main class="app" id="app">
       <header class="app-header">
-        <h1>Quiz App</h1>
-        <p class="muted">
-          A tiny accessible quiz built with vanilla JavaScript.
-        </p>
+        <div class="app-header-container">
+          <div>
+            <h1 style="margin: 0">Quiz App</h1>
+            <p class="muted">
+              A tiny accessible quiz built with vanilla JavaScript.
+            </p>
+          </div>
+          <button
+            id="theme-toggle"
+            class="theme-toggle"
+            aria-label="Toggle dark mode"
+            title="Toggle dark/light mode"
+          >
+            <span class="theme-icon" aria-hidden="true">☀️</span>
+          </button>
+        </div>
       </header>
 
       <section id="start-screen">

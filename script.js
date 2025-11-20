@@ -176,9 +176,7 @@
     const item = QUESTIONS[idx];
     // mark
     const nodes = Array.from(choicesList.children);
-    nodes.forEach((n) =>
-      n.classList.remove("correct", "incorrect")
-    );
+    nodes.forEach((n) => n.classList.remove("correct", "incorrect"));
 
     if (selected === item.answer) {
       li.classList.add("correct");
@@ -238,6 +236,36 @@
       resultScreen.classList.add("hidden");
     }
   });
+
+
+  // theme toggle logic
+  const themeToggle = document.getElementById("theme-toggle");
+  const themeIcon = themeToggle && themeToggle.querySelector(".theme-icon");
+  function setTheme(mode) {
+    document.documentElement.classList.toggle("dark-mode", mode === "dark");
+    if (themeIcon) themeIcon.textContent = mode === "dark" ? "🌙" : "☀️";
+  }
+  function getPreferredTheme() {
+    return (
+      localStorage.getItem("theme-mode") ||
+      (window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light")
+    );
+  }
+
+  if (themeToggle) {
+    themeToggle.addEventListener("click", () => {
+      const current = document.documentElement.classList.contains("dark-mode")
+        ? "dark"
+        : "light";
+      const next = current === "dark" ? "light" : "dark";
+      setTheme(next);
+      localStorage.setItem("theme-mode", next);
+    });
+    // init display
+    setTheme(getPreferredTheme());
+  }
 
   // init
   function init() {
