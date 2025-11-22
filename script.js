@@ -55,7 +55,7 @@
   const scoreEl = el("score");
   const seedInput = el("seed");
   const questionNum = el("question-num");
-  const currentScore = el("score-mini");
+  const currentScore = el("current-score");
   const announcer = el("sr-announcer");
 
   let order = [];
@@ -108,6 +108,11 @@
     );
     current = 0;
     score = 0;
+    // reset current-score (only if element exists)
+    if (currentScore) currentScore.textContent = score;
+    // ensure progress resets
+    if (progressBar) progressBar.style.width = "0";
+    if (progressBar) progressBar.setAttribute("aria-valuenow", "0");
     startScreen.classList.add("hidden");
     resultScreen.classList.add("hidden");
     quizScreen.classList.remove("hidden");
@@ -122,7 +127,7 @@
 
   function renderQuestion() {
     questionNum.textContent = current + 1;
-    // Do not update the mini score here; update it only after the user selects an answer
+    // Do not update the current-score here; update it only after the user selects an answer
 
     selected = null;
     const idx = order[current];
@@ -201,40 +206,30 @@
           65 + item.answer
         )}.`;
     }
-    // update mini score and progress now that the user has finalized this choice
-    try {
-      currentScore.textContent = score;
-    } catch (e) {}
-    // indicate completed questions: current is zero-based, so completed = current + 1
-    updateProgress(current + 1);
+    // update current-score and progress now that the user has finalized this choice
+    if (currentScore) currentScore.textContent = score;
+    current++;
+    updateProgress();
     // advance after short delay
     setTimeout(() => {
-      current++;
       if (current >= order.length) showResult();
       else renderQuestion();
     }, 700);
   }
 
-  // update progress bar; if `completed` is provided it uses that count, otherwise uses `current`
-  function updateProgress(completed) {
+  function updateProgress() {
     let pct = 0;
     const total = order.length || 0;
-    const done = typeof completed === "number" ? completed : current;
+    const done = typeof current === "number" ? current : 0;
     if (total > 0) pct = Math.round((done / total) * 100);
-    progressBar.style.width = pct + "%";
-    try {
-      progressBar.setAttribute("aria-valuenow", String(pct));
-    } catch (e) {
-      /* ignore */
-    }
+    if (progressBar) progressBar.style.width = pct + "%";
+    if (progressBar) progressBar.setAttribute("aria-valuenow", String(pct));
   }
 
   function showResult() {
     // ensure progress shows complete
-    progressBar.style.width = "100%";
-    try {
-      progressBar.setAttribute("aria-valuenow", "100");
-    } catch (e) {}
+    if (progressBar) progressBar.style.width = "100%";
+    if (progressBar) progressBar.setAttribute("aria-valuenow", "100");
     quizScreen.classList.add("hidden");
     resultScreen.classList.remove("hidden");
     scoreEl.textContent = `${score} / ${order.length}`;
@@ -254,11 +249,6 @@
 
   btnStart.addEventListener("click", start);
   btnRestart.addEventListener("click", () => {
-    // ensure progress shows reset
-    progressBar.style.width = "0";
-    try {
-      progressBar.setAttribute("aria-valuenow", "0");
-    } catch (e) {}
     startScreen.classList.remove("hidden");
     resultScreen.classList.add("hidden");
     quizScreen.classList.add("hidden");
