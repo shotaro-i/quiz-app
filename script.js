@@ -146,7 +146,7 @@
       li.appendChild(text);
       li.addEventListener("click", onSelect);
       li.addEventListener("keydown", (ev) => {
-        if (ev.key === "Enter" || ev.code === "Space" || ev.key === " ") {
+        if (ev.key === "Enter" || ev.key === " ") {
           ev.preventDefault();
           onSelect.call(li, ev);
           return;
@@ -254,6 +254,11 @@
 
   btnStart.addEventListener("click", start);
   btnRestart.addEventListener("click", () => {
+    // ensure progress shows reset
+    progressBar.style.width = "0";
+    try {
+      progressBar.setAttribute("aria-valuenow", "0");
+    } catch (e) {}
     startScreen.classList.remove("hidden");
     resultScreen.classList.add("hidden");
     quizScreen.classList.add("hidden");
