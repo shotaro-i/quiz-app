@@ -53,6 +53,7 @@
   const qText = el("question-text");
   const choicesList = el("choices");
   const scoreEl = el("score");
+  const highScoreEl = el("high-score");
   const seedInput = el("seed");
   const questionNum = el("question-num");
   const currentScore = el("current-score");
@@ -234,6 +235,14 @@
     resultScreen.classList.remove("hidden");
     scoreEl.textContent = `${score} / ${order.length}`;
     saveHighScore(score);
+    // display high score (best correct answers)
+    try {
+      const key = "quiz_highscore_v1";
+      const highScore = Number(localStorage.getItem(key) || "0");
+      if (highScoreEl) highScoreEl.textContent = `${highScore} / ${order.length}`;
+    } catch (e) {
+      if (highScoreEl) highScoreEl.textContent = "0";
+    }
   }
 
   function saveHighScore(s) {
