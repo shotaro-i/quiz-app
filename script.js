@@ -56,6 +56,7 @@
   const seedInput = el("seed");
   const questionNum = el("question-num");
   const currentScore = el("score-mini");
+  const announcer = el("sr-announcer");
 
   let order = [];
   let current = 0;
@@ -121,7 +122,7 @@
 
   function renderQuestion() {
     questionNum.textContent = current + 1;
-    currentScore.textContent = score;
+    // Do not update the mini score here; update it only after the user selects an answer
 
     selected = null;
     const idx = order[current];
@@ -134,12 +135,18 @@
       li.tabIndex = 0;
       li.setAttribute("role", "button");
       li.dataset.index = i;
-      li.innerHTML = `<span class="choice-label">${String.fromCharCode(
-        65 + i
-      )}</span><span class="choice-text">${ch}</span>`;
+      // build children safely to avoid HTML injection
+      const label = document.createElement("span");
+      label.className = "choice-label";
+      label.textContent = String.fromCharCode(65 + i);
+      const text = document.createElement("span");
+      text.className = "choice-text";
+      text.textContent = ch;
+      li.appendChild(label);
+      li.appendChild(text);
       li.addEventListener("click", onSelect);
       li.addEventListener("keydown", (ev) => {
-        if (ev.key === "Enter" || ev.key === " ") {
+        if (ev.key === "Enter" || ev.code === "Space" || ev.key === " ") {
           ev.preventDefault();
           onSelect.call(li, ev);
           return;
@@ -165,7 +172,7 @@
       const first = choicesList.firstElementChild;
       if (first) first.focus();
     }, 40);
-    updateProgress();
+    // progress is updated when the user finalizes a choice
   }
 
   function onSelect(e) {
@@ -181,6 +188,7 @@
     if (selected === item.answer) {
       li.classList.add("correct");
       score++;
+      if (announcer) announcer.textContent = "Correct";
     } else {
       li.classList.add("incorrect");
       // reveal correct
@@ -188,7 +196,17 @@
         (n) => Number(n.dataset.index) === item.answer
       );
       if (correctNode) correctNode.classList.add("correct");
+      if (announcer)
+        announcer.textContent = `Incorrect. Correct answer is ${String.fromCharCode(
+          65 + item.answer
+        )}.`;
     }
+    // update mini score and progress now that the user has finalized this choice
+    try {
+      currentScore.textContent = score;
+    } catch (e) {}
+    // indicate completed questions: current is zero-based, so completed = current + 1
+    updateProgress(current + 1);
     // advance after short delay
     setTimeout(() => {
       current++;
@@ -197,12 +215,26 @@
     }, 700);
   }
 
-  function updateProgress() {
-    const pct = Math.round((current / order.length) * 100);
+  // update progress bar; if `completed` is provided it uses that count, otherwise uses `current`
+  function updateProgress(completed) {
+    let pct = 0;
+    const total = order.length || 0;
+    const done = typeof completed === "number" ? completed : current;
+    if (total > 0) pct = Math.round((done / total) * 100);
     progressBar.style.width = pct + "%";
+    try {
+      progressBar.setAttribute("aria-valuenow", String(pct));
+    } catch (e) {
+      /* ignore */
+    }
   }
 
   function showResult() {
+    // ensure progress shows complete
+    progressBar.style.width = "100%";
+    try {
+      progressBar.setAttribute("aria-valuenow", "100");
+    } catch (e) {}
     quizScreen.classList.add("hidden");
     resultScreen.classList.remove("hidden");
     scoreEl.textContent = `${score} / ${order.length}`;
@@ -237,13 +269,17 @@
     }
   });
 
-
   // theme toggle logic
   const themeToggle = document.getElementById("theme-toggle");
   const themeIcon = themeToggle && themeToggle.querySelector(".theme-icon");
   function setTheme(mode) {
     document.documentElement.classList.toggle("dark-mode", mode === "dark");
     if (themeIcon) themeIcon.textContent = mode === "dark" ? "🌙" : "☀️";
+    if (themeToggle)
+      themeToggle.setAttribute(
+        "aria-pressed",
+        mode === "dark" ? "true" : "false"
+      );
   }
   function getPreferredTheme() {
     return (
